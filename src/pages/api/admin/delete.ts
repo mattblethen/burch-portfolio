@@ -1,24 +1,42 @@
 import type { APIRoute } from 'astro';
-import { putFile, toB64 /*, deleteFile*/ } from '../../../lib/github';
+export const runtime = 'node';
 
-const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD;
+import { putFile, toB64 /*, deleteFile */ } from '../../../lib/github';
+
+const ADMIN_PASSWORD = (import.meta.env.ADMIN_PASSWORD ?? '').trim();
+const GH_REPO = import.meta.env.GH_REPO as string;
+const GH_BRANCH = (import.meta.env.GH_BRANCH as string) || 'main';
 
 export const POST: APIRoute = async ({ request }) => {
-  if (request.headers.get('x-admin-key') !== ADMIN_PASSWORD)
-    return new Response('Unauthorized', { status: 401 });
+  try {
+    const key = (request.headers.get('x-admin-key') ?? '').trim();
+    if (!ADMIN_PASSWORD) return json({ ok: false, reason: 'no-admin-password-env' }, 500);
+    if (key !== ADMIN_PASSWORD) return json({ ok: false }, 401);
 
-  const { slug } = await request.json();
-  if (!slug) return new Response('Missing slug', { status: 400 });
+    const { slug } = await request.json().catch(() => ({}));
+    if (!slug) return json({ ok: false, error: 'Missing slug' }, 400);
 
-  const projPath = 'src/data/projects.json';
-  const res = await fetch(`https://raw.githubusercontent.com/${import.meta.env.GH_REPO}/${import.meta.env.GH_BRANCH}/${projPath}`);
-  const arr = res.ok ? await res.json() : [];
+    const projPath = 'src/data/projects.json';
+    const rawUrl = `https://raw.githubusercontent.com/${GH_REPO}/${GH_BRANCH}/${projPath}`;
+    const currentRes = await fetch(rawUrl, { cache: 'no-store' });
+    const arr = currentRes.ok ? await currentRes.json() : [];
 
-  const next = arr.filter((p: any) => p.slug !== slug);
-  await putFile(projPath, toB64(JSON.stringify(next, null, 2)), `Delete project ${slug}`);
+    const next = arr.filter((p: any) => p.slug !== slug);
 
-  // Optional: also delete files under public/images/projects/<slug>/*
-  // (GitHub API needs each file path+sha; can add later if you want hard deletes.)
+    await putFile(projPath, toB64(JSON.stringify(next, null, 2)), `Delete project ${slug}`);
 
-  return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    // Optional: iterate repo for /public/images/projects/<slug>/* and delete each with deleteFile(...)
+    // Skipped by default to keep history.
+
+    return json({ ok: true }, 200);
+  } catch (err: any) {
+    return json({ ok: false, error: String(err?.message || err) }, 500);
+  }
 };
+
+function json(body: any, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
