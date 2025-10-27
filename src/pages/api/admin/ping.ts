@@ -1,20 +1,29 @@
 import type { APIRoute } from 'astro';
+export const runtime = 'node';
 
-export const runtime = 'node'; // <-- important
-
-const ADMIN_PASSWORD = (import.meta.env.ADMIN_PASSWORD ?? '').trim();
+const ADMIN_PASSWORD_RAW = import.meta.env.ADMIN_PASSWORD ?? '';
+const ADMIN_PASSWORD = ADMIN_PASSWORD_RAW.trim();
 
 export const POST: APIRoute = async ({ request }) => {
-  const key = (request.headers.get('x-admin-key') ?? '').trim();
+  const provided = (request.headers.get('x-admin-key') ?? '').trim();
 
   if (!ADMIN_PASSWORD) {
-    // helps differentiate "env not set" vs "wrong password"
-    return new Response(JSON.stringify({ ok: false, reason: 'no-admin-password-env' }), { status: 500 });
+    return json({ ok: false, reason: 'no-admin-password-env' }, 500);
   }
 
-  if (key !== ADMIN_PASSWORD) {
-    return new Response(JSON.stringify({ ok: false }), { status: 401 });
+  // CASE-SENSITIVE compare (default & recommended)
+  if (provided !== ADMIN_PASSWORD) {
+    // If you WANT case-insensitive behavior, uncomment the next 4 lines and remove the check above:
+    // const a = provided.toLowerCase();
+    // const b = ADMIN_PASSWORD.toLowerCase();
+    // if (a !== b) return json({ ok: false, reason: 'mismatch' }, 401);
+
+    return json({ ok: false, reason: 'mismatch' }, 401);
   }
 
-  return new Response(JSON.stringify({ ok: true }), { status: 200 });
+  return json({ ok: true }, 200);
 };
+
+function json(body: any, status = 200) {
+  return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+}
