@@ -168,29 +168,28 @@ import Header from '../components/Header.astro';
 
     // Unlock with server verification
     $('#save-key').addEventListener('click', async () => {
-      KEY = $('#admin-key').value.trim();
-      if (!KEY) return;
+  KEY = $('#admin-key').value.trim();
+  if (!KEY) return;
 
-      const res = await fetch('/api/admin/ping', {
-        method: 'POST',
-        headers: { 'x-admin-key': KEY }
-      });
+  const res = await fetch('/api/admin/ping', {
+    method: 'POST',
+    headers: { 'x-admin-key': KEY }
+  });
 
-      if (res.ok) {
-        $('#auth-status').textContent = '✅ Unlocked';
-        $('#create-form').classList.remove('hidden');
-        $('#manage').classList.remove('hidden');
-        loadProjects();
-      } else {
-        const data = await res.json().catch(() => ({}));
-        const reason = data && data.reason ? data.reason : 'incorrect-password';
-        $('#auth-status').textContent =
-          reason === 'no-admin-password-env'
-            ? '❌ Server missing ADMIN_PASSWORD (set env + redeploy)'
-            : '❌ Incorrect password';
-        KEY = '';
-      }
-    });
+  if (res.ok) {
+    $('#auth-status').textContent = '✅ Unlocked';
+    $('#create-form').classList.remove('hidden');
+    $('#manage').classList.remove('hidden');
+    loadProjects();
+  } else {
+    let reason = 'unknown';
+    try { const data = await res.json(); reason = data?.reason || reason; } catch {}
+    // Show server status + reason so we know what to fix
+    $('#auth-status').textContent = `❌ Incorrect password (status ${res.status}, reason: ${reason})`;
+    KEY = '';
+  }
+});
+
 
     // Create project
     $('#create-form').addEventListener('submit', async (e) => {
