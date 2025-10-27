@@ -88,8 +88,8 @@ import Header from '../components/Header.astro';
     let PROJECTS = [];
 
     async function loadProjects() {
-      const res = await fetch('/src/data/projects.json', { cache: 'no-store' });
-      PROJECTS = res.ok ? await res.json() : [];
+  const res = await fetch('/api/admin/list', { cache: 'no-store' });
+  PROJECTS = res.ok ? await res.json() : [];
       const ul = $('#list');
       ul.innerHTML = '';
       PROJECTS.forEach((p) => {
