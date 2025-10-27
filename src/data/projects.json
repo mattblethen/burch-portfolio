@@ -1,12 +1,5 @@
 [
   {
-    "slug": "undersea-classroom",
-    "title": "Undersea Classroom Mural",
-    "tag": "MURAL",
-    "cover": "/images/sea.jpg",
-    "images": ["/images/sea.jpg"]
-  },
-  {
     "slug": "volcano-progress",
     "title": "Volcano Classroom Mural — Progression",
     "tag": "MURAL",
@@ -19,59 +12,84 @@
     "blurb": "From line art to final: a classroom-sized volcano scene with warm sunset tones and ocean foreground."
   },
   {
+    "slug": "undersea-classroom",
+    "title": "Undersea Classroom Mural",
+    "tag": "MURAL",
+    "cover": "/images/sea.jpg",
+    "images": [
+      "/images/sea.jpg"
+    ]
+  },
+  {
     "slug": "trash-wave",
     "title": "Trash Wave Illustration",
     "tag": "ILLUSTRATION",
     "cover": "/images/trash.jpg",
-    "images": ["/images/trash.jpg"]
+    "images": [
+      "/images/trash.jpg"
+    ]
   },
   {
     "slug": "jungle-classroom",
     "title": "Jungle Classroom Mural",
     "tag": "MURAL",
     "cover": "/images/wallart.jpg",
-    "images": ["/images/wallart.jpg"]
+    "images": [
+      "/images/wallart.jpg"
+    ]
   },
   {
     "slug": "dinosaur-science-room",
     "title": "Dinosaur Science Room",
     "tag": "MURAL",
     "cover": "/images/Dino.jpg",
-    "images": ["/images/Dino.jpg"]
+    "images": [
+      "/images/Dino.jpg"
+    ]
   },
   {
     "slug": "world-map-classroom",
     "title": "World Map Classroom Mural",
     "tag": "MURAL",
     "cover": "/images/daycar wallart.jpg",
-    "images": ["/images/daycar wallart.jpg"]
+    "images": [
+      "/images/daycar wallart.jpg"
+    ]
   },
   {
     "slug": "political-debate",
     "title": "Political Debate Illustration",
     "tag": "ILLUSTRATION",
     "cover": "/images/redvblue.jpg",
-    "images": ["/images/redvblue.jpg"]
+    "images": [
+      "/images/redvblue.jpg"
+    ]
   },
   {
     "slug": "falling-illustration",
     "title": "Falling Illustration",
     "tag": "ILLUSTRATION",
     "cover": "/images/portfolio.jpg",
-    "images": ["/images/portfolio.jpg"]
+    "images": [
+      "/images/portfolio.jpg"
+    ]
   },
   {
     "slug": "tattoo-moth",
     "title": "Tattoo-Style Moth",
     "tag": "ILLUSTRATION",
     "cover": "/images/tattoo.jpg",
-    "images": ["/images/tattoo.jpg"]
+    "images": [
+      "/images/tattoo.jpg"
+    ]
   },
   {
     "slug": "fish-composition",
     "title": "Fish Composition",
     "tag": "ILLUSTRATION",
     "cover": "/images/fish.jpg",
-    "images": ["/images/fish.jpg"]
+    "images": [
+      "/images/fish.jpg"
+    ]
   }
 ]
