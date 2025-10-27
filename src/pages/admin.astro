@@ -98,14 +98,26 @@ import Header from '../components/Header.astro';
       });
     }
 
-    $('#save-key').addEventListener('click', () => {
-      KEY = $('#admin-key').value.trim();
-      if (!KEY) return;
-      $('#auth-status').textContent = 'Unlocked';
-      $('#create-form').classList.remove('hidden');
-      $('#manage').classList.remove('hidden');
-      loadProjects();
-    });
+    $('#save-key').addEventListener('click', async () => {
+  KEY = $('#admin-key').value.trim();
+  if (!KEY) return;
+
+  const res = await fetch('/api/admin/ping', {
+    method: 'POST',
+    headers: { 'x-admin-key': KEY },
+  });
+
+  if (res.ok) {
+    $('#auth-status').textContent = '✅ Unlocked';
+    $('#create-form').classList.remove('hidden');
+    $('#manage').classList.remove('hidden');
+    loadProjects();
+  } else {
+    $('#auth-status').textContent = '❌ Incorrect password';
+    KEY = '';
+  }
+});
+
 
     $('#create-form').addEventListener('submit', async (e) => {
       e.preventDefault();
