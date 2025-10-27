@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import ImageModal from '../../components/ImageModal.astro';
+import type { Project } from '../../data/projects';
+import { projects } from '../../data/projects';
+
+/** Build-time paths for every project slug */
+export async function getStaticPaths() {
+  return projects.map((p) => ({
+    params: { slug: p.slug },
+    props: { project: p } as { project: Project },
+  }));
+}
+
+const { project } = Astro.props as { project: Project };
+const { title, tag, images = [], blurb } = project;
+---
+
+<Base title={`${title} — Jeremey Burch`}>
+  <Header />
+
+  <section class="mx-auto max-w-7xl px-6 py-10">
+    <div class="mb-6">
+      <div class="text-xs tracking-widest text-white/60">{tag}</div>
+      <h1 class="font-heading text-4xl">{title}</h1>
+      {blurb && <p class="text-white/80 mt-3">{blurb}</p>}
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {images.map((src) => (
+        <img
+          src={src}
+          alt={title}
+          class="w-full rounded-xl border border-white/5 object-cover"
+          data-zoom
+          data-src={src}
+        />
+      ))}
+    </div>
+  </section>
+
+  <ImageModal />
+</Base>

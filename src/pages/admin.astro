@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+---
+
+<Base title="Admin — Projects">
+  <Header />
+
+  <section class="mx-auto max-w-4xl px-6 py-10">
+    <h1 class="font-heading text-3xl mb-4">Projects Admin</h1>
+
+    <!-- Auth -->
+    <div class="mb-8">
+      <input id="admin-key" type="password" placeholder="Admin password"
+        class="w-full max-w-sm rounded border border-white/10 bg-white/5 px-3 py-2" />
+      <button id="save-key" class="ml-2 rounded bg-tide px-3 py-2 text-ink font-semibold">Unlock</button>
+      <span id="auth-status" class="ml-3 text-white/70"></span>
+    </div>
+
+    <!-- Create -->
+    <form id="create-form" class="space-y-3 hidden">
+      <div class="grid gap-3 md:grid-cols-2">
+        <input name="title" required placeholder="Title" class="rounded border border-white/10 bg-white/5 px-3 py-2" />
+        <select name="tag" class="rounded border border-white/10 bg-white/5 px-3 py-2">
+          <option value="MURAL">MURAL</option>
+          <option value="ILLUSTRATION">ILLUSTRATION</option>
+        </select>
+      </div>
+      <input name="slug" placeholder="Slug (optional)" class="rounded border border-white/10 bg-white/5 px-3 py-2" />
+      <textarea name="blurb" rows="3" placeholder="Blurb (optional)" class="w-full rounded border border-white/10 bg-white/5 px-3 py-2"></textarea>
+      <label class="block">
+        <span class="text-white/70">Images (1 or more)</span>
+        <input name="images" type="file" multiple accept="image/*" class="mt-1" />
+      </label>
+      <button class="rounded bg-flame px-4 py-2 text-ink font-semibold">Create Project</button>
+      <div id="create-status" class="text-white/70"></div>
+    </form>
+
+    <!-- Reorder/Delete -->
+    <div id="manage" class="mt-10 hidden">
+      <h2 class="font-heading text-2xl mb-3">Reorder / Delete</h2>
+      <ul id="list" class="space-y-2"></ul>
+      <button id="save-order" class="mt-4 rounded bg-tide px-4 py-2 text-ink font-semibold">Save Order</button>
+      <span id="order-status" class="ml-3 text-white/70"></span>
+    </div>
+  </section>
+
+  <script is:inline>
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+    let KEY = '';
+    let PROJECTS = [];
+
+    // Load projects.json to build list
+    async function loadProjects() {
+      const res = await fetch('/src/data/projects.json', { cache: 'no-store' });
+      PROJECTS = res.ok ? await res.json() : [];
+      const ul = $('#list');
+      ul.innerHTML = '';
+      PROJECTS.forEach(p => {
+        const li = document.createElement('li');
+        li.draggable = true;
+        li.dataset.slug = p.slug;
+        li.className = 'flex items-center justify-between rounded border border-white/10 bg-white/5 px-3 py-2';
+        li.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="cursor-grab">↕</span>
+            <img src="${p.cover}" alt="" class="w-12 h-12 object-cover rounded border border-white/10" />
+            <div>
+              <div class="font-semibold">${p.title}</div>
+              <div class="text-xs text-white/60">${p.slug}</div>
+            </div>
+          </div>
+          <button data-del="${p.slug}" class="text-red-300 hover:text-red-200">Delete</button>
+        `;
+        ul.appendChild(li);
+      });
+      makeSortable(ul);
+    }
+
+    function makeSortable(list) {
+      let dragEl;
+      list.addEventListener('dragstart', e => { dragEl = e.target; e.dataTransfer.effectAllowed='move'; });
+      list.addEventListener('dragover', e => { e.preventDefault(); const el = e.target.closest('li'); if (el && el !== dragEl) { const rect = el.getBoundingClientRect(); const next = (e.clientY - rect.top)/(rect.height) > 0.5; list.insertBefore(dragEl, next? el.nextSibling : el); }});
+      list.addEventListener('drop', e => { e.preventDefault(); dragEl=null; });
+      list.addEventListener('click', async (e) => {
+        const btn = e.target.closest('[data-del]');
+        if (!btn) return;
+        const slug = btn.getAttribute('data-del');
+        if (!confirm(`Delete ${slug}?`)) return;
+        const res = await fetch('/api/admin/delete', {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json', 'x-admin-key': KEY },
+          body: JSON.stringify({ slug })
+        });
+        if (res.ok) { await loadProjects(); $('#order-status').textContent='Deleted.'; }
+        else { $('#order-status').textContent='Delete failed.'; }
+      });
+    }
+
+    $('#save-key').addEventListener('click', () => {
+      KEY = $('#admin-key').value.trim();
+      if (!KEY) return;
+      $('#auth-status').textContent = 'Unlocked';
+      $('#create-form').classList.remove('hidden');
+      $('#manage').classList.remove('hidden');
+      loadProjects();
+    });
+
+    $('#create-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.currentTarget);
+      const res = await fetch('/api/admin/create', { method: 'POST', headers:{ 'x-admin-key': KEY }, body: fd });
+      $('#create-status').textContent = res.ok ? 'Created!' : 'Failed.';
+      if (res.ok) { e.currentTarget.reset(); loadProjects(); }
+    });
+
+    $('#save-order').addEventListener('click', async () => {
+      const order = $$('#list li').map(li => li.dataset.slug);
+      const res = await fetch('/api/admin/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'x-admin-key': KEY },
+        body: JSON.stringify({ order })
+      });
+      $('#order-status').textContent = res.ok ? 'Order saved.' : 'Save failed.';
+    });
+  </script>
+</Base>

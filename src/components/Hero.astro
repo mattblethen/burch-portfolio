@@ -1,0 +1,16 @@
+---
+const { headline = 'Transforming spaces into stories.', sub='Muralist & Illustrator | Lexington, KY' } = Astro.props;
+---
+<section class="relative overflow-hidden">
+  <div class="absolute inset-0 opacity-20 pointer-events-none"
+       style="background-image: radial-gradient(ellipse at 20% 10%, rgba(43,170,160,.5), transparent 50%),
+                              radial-gradient(ellipse at 80% 80%, rgba(242,107,56,.4), transparent 50%);"></div>
+  <div class="mx-auto max-w-7xl px-6 pt-20 pb-12">
+    <h1 class="font-heading text-5xl md:text-7xl font-black tracking-tight">{headline}</h1>
+    <p class="mt-4 text-lg text-white/80">{sub}</p>
+    <div class="mt-8 flex gap-4">
+      <a href="/contact" class="bg-flame text-ink px-5 py-3 rounded-xl font-semibold hover:opacity-90">Book a Mural</a>
+      <a href="/portfolio" class="border border-tide text-tide px-5 py-3 rounded-xl hover:bg-tide/10">View Portfolio</a>
+    </div>
+  </div>
+</section>

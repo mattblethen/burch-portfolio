@@ -1,0 +1,10 @@
+---
+const { name = 'Jeremey Burch', role = 'Muralist & Illustrator', img = '/images/headshot.jpg' } = Astro.props;
+---
+<div class="flex items-center gap-6">
+  <img src={img} alt={name} class="w-28 h-28 rounded-full ring-2 ring-tide/60 object-cover" />
+  <div>
+    <h3 class="font-heading text-2xl">{name}</h3>
+    <p class="text-white/70">{role}</p>
+  </div>
+</div>

@@ -1,11 +1,61 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import GalleryGrid from '../components/GalleryGrid.astro';
+import ImageModal from '../components/ImageModal.astro';
+import { featured as featuredProjects } from '../data/projects';
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<Base title="Jeremey Burch — Muralist & Illustrator">
+  <Header />
+  <Hero headline="Transforming spaces into stories." sub="Muralist & Illustrator | Lexington, KY" />
+
+  <!-- Profile feature block -->
+  <section class="mx-auto max-w-7xl px-6 pt-6">
+    <div class="grid md:grid-cols-[200px,1fr] gap-6 items-center rounded-2xl bg-coal/40 border border-white/5 p-6">
+      <img
+        src="/images/profile.png"
+        alt="Jeremey Burch headshot"
+        class="w-48 h-48 object-cover rounded-xl border border-white/10"
+      />
+      <div>
+        <h3 class="font-heading text-2xl mb-2">Meet Jeremey</h3>
+        <p class="text-white/80">
+          Lexington-based muralist and illustrator focused on bold color and clear storytelling across schools,
+          businesses, and public spaces.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 py-12">
+    <h2 class="font-heading text-3xl mb-6">Featured Work</h2>
+    <GalleryGrid items={featuredProjects} />
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 py-14 grid md:grid-cols-2 gap-10 items-center">
+    <div>
+      <h3 class="font-heading text-3xl mb-4">Public art that inspires imagination.</h3>
+      <p class="text-white/80">
+        Jeremey creates murals and illustrations that bring spaces to life—from vibrant classrooms to thought-provoking social pieces.
+      </p>
+      <a href="/contact" class="mt-6 inline-block bg-flame text-ink px-5 py-3 rounded-xl font-semibold">Request a Mural</a>
+    </div>
+    <img src="/images/wallart.jpg" alt="Jungle Classroom Mural" class="rounded-xl border border-white/5" />
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 pb-16">
+    <div class="rounded-2xl bg-coal/40 border border-white/5 p-8 text-center">
+      <h3 class="font-heading text-2xl">Have a wall in mind?</h3>
+      <p class="text-white/80 mt-2">
+        Send dimensions and a concept idea, and Jeremey will follow up with sketches and a quote.
+      </p>
+      <a href="/contact" class="mt-5 inline-block border border-tide text-tide px-5 py-3 rounded-xl hover:bg-tide/10">
+        Start the Conversation
+      </a>
+    </div>
+  </section>
+
+  <ImageModal />
+</Base>

@@ -1,0 +1,79 @@
+---
+/**
+ * Usage: place <ImageModal /> once per page.
+ * Any element you want to zoom should have:
+ *   data-zoom
+ *   data-src="/path/to/fullsize.jpg"  (optional if it's an <img> with src)
+ */
+---
+<div id="img-modal" class="fixed inset-0 z-[1000] hidden">
+  <!-- overlay -->
+  <div id="img-modal-overlay" class="absolute inset-0 bg-black/80"></div>
+
+  <!-- close -->
+  <button
+    id="img-modal-close"
+    aria-label="Close"
+    class="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-xl backdrop-blur"
+    data-close
+  >
+    Close
+  </button>
+
+  <!-- image area -->
+  <div class="relative h-full w-full flex items-center justify-center p-4">
+    <img
+      id="img-modal-image"
+      alt=""
+      class="max-h-full max-w-full rounded-xl shadow-2xl border border-white/10 pointer-events-auto"
+    />
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const modal = document.getElementById('img-modal');
+    const overlay = document.getElementById('img-modal-overlay');
+    const imgEl = document.getElementById('img-modal-image');
+
+    function openModal(src) {
+      if (!src) return;
+      imgEl.src = src;
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      imgEl.src = '';
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // Open: any element with [data-zoom]
+    document.addEventListener('click', (e) => {
+      const zoomTarget = e.target.closest('[data-zoom]');
+      if (zoomTarget) {
+        const src = zoomTarget.getAttribute('data-src') || zoomTarget.getAttribute('src');
+        openModal(src);
+      }
+    });
+
+    // Close: Close button (data-close), overlay, or clicking outside the image
+    document.addEventListener('click', (e) => {
+      if (modal.classList.contains('hidden')) return;
+
+      const isCloseBtn = e.target.closest('[data-close]');
+      const clickedOverlay = e.target === overlay;
+      const clickedOutsideImage = !e.target.closest('#img-modal-image') && !e.target.closest('#img-modal-image *') && e.target.closest('#img-modal');
+
+      if (isCloseBtn || clickedOverlay || clickedOutsideImage) {
+        closeModal();
+      }
+    });
+
+    // Esc key closes
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
+  })();
+</script>

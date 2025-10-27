@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+---
+<Base title="Contact — Jeremey Burch">
+  <Header />
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    <h1 class="font-heading text-4xl mb-4">Request a Quote</h1>
+    <p class="text-white/80 mb-8">Tell me about your wall (dimensions, surface, indoor/outdoor) and your idea.</p>
+    <form name="contact" method="POST" data-netlify="true" class="space-y-4">
+      <input type="hidden" name="form-name" value="contact" />
+      <input class="w-full rounded-lg bg-coal/40 border border-white/10 px-4 py-3" name="name" placeholder="Your name" required>
+      <input class="w-full rounded-lg bg-coal/40 border border-white/10 px-4 py-3" name="email" type="email" placeholder="Email" required>
+      <textarea class="w-full rounded-lg bg-coal/40 border border-white/10 px-4 py-3" name="message" rows="6" placeholder="Project details"></textarea>
+      <button class="bg-flame text-ink px-5 py-3 rounded-xl font-semibold">Send</button>
+    </form>
+  </section>
+</Base>
