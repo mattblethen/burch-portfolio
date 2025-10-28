@@ -1,5 +1,6 @@
 ---
 import SpeedInsights from "@vercel/speed-insights/astro";
+import Footer from "../components/Footer.astro"; // ✅ import footer
 
 const {
   title = 'Jeremey Burch — Muralist & Illustrator',
@@ -14,12 +15,20 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=League+Spartan:wght@500;700;900&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=League+Spartan:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body class="min-h-screen bg-ink text-paper font-body">
-    <slot />
-    <SpeedInsights /> 
-    <!-- Optional: render only in production -->
-    <!-- {import.meta.env.PROD && <SpeedInsights />} -->
+  <body class="min-h-screen flex flex-col bg-ink text-paper font-body">
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <!-- Global footer -->
+    <Footer />
+
+    <!-- Vercel performance tracking -->
+    <SpeedInsights />
   </body>
 </html>

@@ -2,17 +2,68 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 ---
+
 <Base title="Contact — Jeremey Burch">
   <Header />
+
+  <head>
+    <!-- Preload primary font for stability -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" as="style" />
+  </head>
+
   <section class="mx-auto max-w-3xl px-6 py-16">
     <h1 class="font-heading text-4xl mb-4">Request a Quote</h1>
-    <p class="text-white/80 mb-8">Tell me about your wall (dimensions, surface, indoor/outdoor) and your idea.</p>
-    <form name="contact" method="POST" data-netlify="true" class="space-y-4">
+    <p class="text-white/80 mb-8 leading-relaxed max-w-prose">
+      Tell me about your wall (dimensions, surface, indoor/outdoor) and your idea.
+    </p>
+
+    <!-- Stable form: fixed widths, consistent line-height, and reserved spacing -->
+    <form
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      class="space-y-4"
+    >
       <input type="hidden" name="form-name" value="contact" />
-      <input class="w-full rounded-lg bg-coal/40 border border-white/10 px-4 py-3" name="name" placeholder="Your name" required>
-      <input class="w-full rounded-lg bg-coal/40 border border-white/10 px-4 py-3" name="email" type="email" placeholder="Email" required>
-      <textarea class="w-full rounded-lg bg-coal/40 border border-white/10 px-4 py-3" name="message" rows="6" placeholder="Project details"></textarea>
-      <button class="bg-flame text-ink px-5 py-3 rounded-xl font-semibold">Send</button>
+
+      <div class="space-y-4">
+        <div class="relative">
+          <input
+            name="name"
+            required
+            placeholder="Your name"
+            class="peer w-full rounded-lg bg-coal/40 border border-white/10 px-4 py-3 transition-shadow duration-150 focus:outline-none focus:ring-2 focus:ring-flame/60"
+          />
+        </div>
+
+        <div class="relative">
+          <input
+            name="email"
+            type="email"
+            required
+            placeholder="Email"
+            class="peer w-full rounded-lg bg-coal/40 border border-white/10 px-4 py-3 transition-shadow duration-150 focus:outline-none focus:ring-2 focus:ring-flame/60"
+          />
+        </div>
+
+        <div class="relative">
+          <textarea
+            name="message"
+            rows="6"
+            placeholder="Project details"
+            class="peer w-full rounded-lg bg-coal/40 border border-white/10 px-4 py-3 transition-shadow duration-150 focus:outline-none focus:ring-2 focus:ring-flame/60 resize-none"
+          ></textarea>
+        </div>
+
+        <div class="pt-2">
+          <button
+            type="submit"
+            class="bg-flame text-ink px-5 py-3 rounded-xl font-semibold transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
+          >
+            Send
+          </button>
+        </div>
+      </div>
     </form>
   </section>
 </Base>

@@ -1,9 +1,31 @@
+---
+const year = new Date().getFullYear();
+---
+
 <footer class="mt-16 border-t border-white/5">
-  <div class="mx-auto max-w-7xl px-6 py-10 flex items-center justify-between text-sm text-white/70">
-    <p>© {new Date().getFullYear()} Jeremey Burch. All rights reserved.</p>
-    <div class="flex gap-4">
-      <a href="https://instagram.com/" class="hover:text-flame">Instagram</a>
-      <a href="mailto:hello@example.com" class="hover:text-flame">Email</a>
+  <div
+    class="mx-auto max-w-7xl px-6 py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-white/70 leading-relaxed"
+  >
+    <!-- Static height & predictable wrapping for stability -->
+    <p class="text-center md:text-left whitespace-nowrap">
+      © {year} Jeremey Burch. All rights reserved.
+    </p>
+
+    <div class="flex justify-center md:justify-end gap-4">
+      <a
+        href="https://instagram.com/"
+        rel="noopener noreferrer"
+        target="_blank"
+        class="transition-colors duration-200 hover:text-flame focus:outline-none focus:ring-2 focus:ring-flame/50 rounded-sm"
+      >
+        Instagram
+      </a>
+      <a
+        href="mailto:hello@example.com"
+        class="transition-colors duration-200 hover:text-flame focus:outline-none focus:ring-2 focus:ring-flame/50 rounded-sm"
+      >
+        Email
+      </a>
     </div>
   </div>
 </footer>

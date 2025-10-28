@@ -4,19 +4,81 @@ import Header from '../components/Header.astro';
 import GalleryGrid from '../components/GalleryGrid.astro';
 import ImageModal from '../components/ImageModal.astro';
 import { murals, illustrations } from '../data/projects';
+
+// Grab first mural & illustration image for preload hints
+const preloadMurals = murals[0]?.cover;
+const preloadIllust = illustrations[0]?.cover;
 ---
 
 <Base title="Portfolio — Jeremey Burch">
   <Header />
 
+  <head>
+    <!-- Preload one image per category for early layout stability -->
+    {preloadMurals && (
+      <link rel="preload" as="image" href={preloadMurals} imagesrcset={preloadMurals + ' 1200w'} />
+    )}
+    {preloadIllust && (
+      <link rel="preload" as="image" href={preloadIllust} imagesrcset={preloadIllust + ' 1200w'} />
+    )}
+  </head>
+
+  <!-- Murals -->
   <section id="murals" class="mx-auto max-w-7xl px-6 py-12">
     <h1 class="font-heading text-4xl mb-6">Murals</h1>
-    <GalleryGrid items={murals} />
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {murals.map((p) => (
+        <a
+          href={`/projects/${p.slug}`}
+          class="group block rounded-xl border border-white/5 overflow-hidden bg-white/5"
+        >
+          <div class="relative aspect-[4/3] overflow-hidden">
+            <img
+              src={p.cover}
+              alt={p.title}
+              width="1200"
+              height="900"
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            />
+          </div>
+          <div class="p-4">
+            <h3 class="font-heading text-lg font-semibold leading-tight">{p.title}</h3>
+            {p.blurb && <p class="text-sm text-white/70 mt-1 line-clamp-2">{p.blurb}</p>}
+          </div>
+        </a>
+      ))}
+    </div>
   </section>
 
+  <!-- Illustrations -->
   <section id="illustrations" class="mx-auto max-w-7xl px-6 py-12">
     <h2 class="font-heading text-3xl mb-6">Illustrations</h2>
-    <GalleryGrid items={illustrations} />
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {illustrations.map((p) => (
+        <a
+          href={`/projects/${p.slug}`}
+          class="group block rounded-xl border border-white/5 overflow-hidden bg-white/5"
+        >
+          <div class="relative aspect-[4/3] overflow-hidden">
+            <img
+              src={p.cover}
+              alt={p.title}
+              width="1200"
+              height="900"
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            />
+          </div>
+          <div class="p-4">
+            <h3 class="font-heading text-lg font-semibold leading-tight">{p.title}</h3>
+            {p.blurb && <p class="text-sm text-white/70 mt-1 line-clamp-2">{p.blurb}</p>}
+          </div>
+        </a>
+      ))}
+    </div>
   </section>
 
   <ImageModal />

@@ -1,10 +1,31 @@
 ---
-const { name = 'Jeremey Burch', role = 'Muralist & Illustrator', img = '/images/headshot.jpg' } = Astro.props;
+const {
+  name = 'Jeremey Burch',
+  role = 'Muralist & Illustrator',
+  img = '/images/headshot.jpg'
+} = Astro.props;
 ---
-<div class="flex items-center gap-6">
-  <img src={img} alt={name} class="w-28 h-28 rounded-full ring-2 ring-tide/60 object-cover" />
-  <div>
-    <h3 class="font-heading text-2xl">{name}</h3>
-    <p class="text-white/70">{role}</p>
+
+<div class="flex items-center gap-6 min-h-[112px]">
+  <!-- CLS-safe avatar -->
+  <div class="relative w-28 aspect-[1/1] flex-shrink-0">
+    <img
+      src={img}
+      alt={name}
+      width="112"
+      height="112"
+      loading="lazy"
+      decoding="async"
+      class="absolute inset-0 h-full w-full rounded-full ring-2 ring-tide/60 object-cover"
+    />
+  </div>
+
+  <div class="min-w-0">
+    <h3 class="font-heading text-2xl leading-tight whitespace-nowrap">
+      {name}
+    </h3>
+    <p class="text-white/70 leading-relaxed text-sm">
+      {role}
+    </p>
   </div>
 </div>

@@ -9,7 +9,7 @@ interface Props {
 
 const { items = [] } = Astro.props as Props;
 
-// normalize and filter out any undefined values
+// Normalize and filter out any undefined values
 const safeItems: Item[] = Array.isArray(items)
   ? items.filter((i): i is Item => typeof i === 'object' && i !== null)
   : [];
@@ -22,18 +22,33 @@ const safeItems: Item[] = Array.isArray(items)
     const href = `/projects/${item.slug}`;
 
     const card = (
-      <div class="group relative rounded-xl overflow-hidden border border-white/5 bg-white/5 hover:bg-white/10 transition">
-        <img
-          src={item.cover}
-          alt={item.title}
-          class="w-full h-64 object-cover"
-          data-zoom={!multi ? true : undefined}
-          data-src={!multi ? (images[0] ?? item.cover) : undefined}
-        />
-        <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
-          <div class="text-xs tracking-wider text-white/70">{item.tag}</div>
-          <div class="font-semibold">{item.title}</div>
-          <div class="text-white/70 text-xs mt-1">
+      <div
+        class="group relative rounded-xl overflow-hidden border border-white/5 bg-white/5 hover:bg-white/10 transition-colors duration-200"
+      >
+        <!-- CLS-safe image container -->
+        <div class="relative aspect-[4/3] w-full overflow-hidden">
+          <img
+            src={item.cover}
+            alt={item.title}
+            width="1200"
+            height="900"
+            loading="lazy"
+            decoding="async"
+            class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            data-zoom={!multi ? true : undefined}
+            data-src={!multi ? (images[0] ?? item.cover) : undefined}
+          />
+        </div>
+
+        <!-- Overlay content stays fixed size -->
+        <div
+          class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/60 to-transparent"
+        >
+          <div class="text-xs tracking-wider text-white/70 leading-relaxed">
+            {item.tag}
+          </div>
+          <div class="font-semibold leading-tight">{item.title}</div>
+          <div class="text-white/70 text-xs mt-1 leading-relaxed">
             {multi ? `${images.length} photos` : 'Tap to zoom'}
           </div>
         </div>
@@ -42,7 +57,13 @@ const safeItems: Item[] = Array.isArray(items)
 
     return (
       <div>
-        {multi ? <a href={href} aria-label={item.title}>{card}</a> : card}
+        {multi ? (
+          <a href={href} aria-label={item.title}>
+            {card}
+          </a>
+        ) : (
+          card
+        )}
       </div>
     );
   })}

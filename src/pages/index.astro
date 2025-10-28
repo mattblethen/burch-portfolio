@@ -5,23 +5,47 @@ import Hero from '../components/Hero.astro';
 import GalleryGrid from '../components/GalleryGrid.astro';
 import ImageModal from '../components/ImageModal.astro';
 import { featured as featuredProjects } from '../data/projects';
+
+const profileSrc = '/images/profile.png';
+const muralSrc = '/images/wallart.jpg';
 ---
 
 <Base title="Jeremey Burch — Muralist & Illustrator">
   <Header />
-  <Hero headline="Transforming spaces into stories." sub="Muralist & Illustrator | Lexington, KY" />
+
+  <head>
+    <!-- Preload key above-the-fold images -->
+    <link rel="preload" as="image" href={profileSrc} imagesrcset={profileSrc + ' 600w'} />
+    <link rel="preload" as="image" href={muralSrc} imagesrcset={muralSrc + ' 1200w'} />
+  </head>
+
+  <!-- Hero -->
+  <Hero
+    headline="Transforming spaces into stories."
+    sub="Muralist & Illustrator | Lexington, KY"
+  />
 
   <!-- Profile feature block -->
   <section class="mx-auto max-w-7xl px-6 pt-6">
-    <div class="grid md:grid-cols-[200px,1fr] gap-6 items-center rounded-2xl bg-coal/40 border border-white/5 p-6">
-      <img
-        src="/images/profile.png"
-        alt="Jeremey Burch headshot"
-        class="w-48 h-48 object-cover rounded-xl border border-white/10"
-      />
+    <div
+      class="grid md:grid-cols-[200px,1fr] gap-6 items-center rounded-2xl bg-coal/40 border border-white/5 p-6"
+    >
+      <div
+        class="relative aspect-[1/1] w-48 overflow-hidden rounded-xl border border-white/10"
+      >
+        <img
+          src={profileSrc}
+          alt="Jeremey Burch headshot"
+          width="400"
+          height="400"
+          loading="eager"
+          decoding="async"
+          class="absolute inset-0 h-full w-full object-cover"
+        />
+      </div>
       <div>
         <h3 class="font-heading text-2xl mb-2">Meet Jeremey</h3>
-        <p class="text-white/80">
+        <p class="text-white/80 leading-relaxed">
           Lexington-based muralist and illustrator focused on bold color and clear storytelling across schools,
           businesses, and public spaces.
         </p>
@@ -29,29 +53,59 @@ import { featured as featuredProjects } from '../data/projects';
     </div>
   </section>
 
+  <!-- Featured Work -->
   <section class="mx-auto max-w-7xl px-6 py-12">
     <h2 class="font-heading text-3xl mb-6">Featured Work</h2>
     <GalleryGrid items={featuredProjects} />
   </section>
 
-  <section class="mx-auto max-w-7xl px-6 py-14 grid md:grid-cols-2 gap-10 items-center">
+  <!-- CTA Split Section -->
+  <section
+    class="mx-auto max-w-7xl px-6 py-14 grid md:grid-cols-2 gap-10 items-center"
+  >
     <div>
-      <h3 class="font-heading text-3xl mb-4">Public art that inspires imagination.</h3>
-      <p class="text-white/80">
+      <h3 class="font-heading text-3xl mb-4">
+        Public art that inspires imagination.
+      </h3>
+      <p class="text-white/80 leading-relaxed">
         Jeremey creates murals and illustrations that bring spaces to life—from vibrant classrooms to thought-provoking social pieces.
       </p>
-      <a href="/contact" class="mt-6 inline-block bg-flame text-ink px-5 py-3 rounded-xl font-semibold">Request a Mural</a>
+      <a
+        href="/contact"
+        class="mt-6 inline-block bg-flame text-ink px-5 py-3 rounded-xl font-semibold transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
+      >
+        Request a Mural
+      </a>
     </div>
-    <img src="/images/wallart.jpg" alt="Jungle Classroom Mural" class="rounded-xl border border-white/5" />
+
+    <div
+      class="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-white/5"
+    >
+      <img
+        src={muralSrc}
+        alt="Jungle Classroom Mural"
+        width="1200"
+        height="900"
+        loading="lazy"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+      />
+    </div>
   </section>
 
+  <!-- Bottom CTA -->
   <section class="mx-auto max-w-7xl px-6 pb-16">
-    <div class="rounded-2xl bg-coal/40 border border-white/5 p-8 text-center">
+    <div
+      class="rounded-2xl bg-coal/40 border border-white/5 p-8 text-center"
+    >
       <h3 class="font-heading text-2xl">Have a wall in mind?</h3>
-      <p class="text-white/80 mt-2">
+      <p class="text-white/80 mt-2 leading-relaxed max-w-prose mx-auto">
         Send dimensions and a concept idea, and Jeremey will follow up with sketches and a quote.
       </p>
-      <a href="/contact" class="mt-5 inline-block border border-tide text-tide px-5 py-3 rounded-xl hover:bg-tide/10">
+      <a
+        href="/contact"
+        class="mt-5 inline-block border border-tide text-tide px-5 py-3 rounded-xl hover:bg-tide/10 transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]"
+      >
         Start the Conversation
       </a>
     </div>

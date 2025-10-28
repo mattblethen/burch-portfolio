@@ -2,14 +2,39 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import ProfileCard from '../components/ProfileCard.astro';
+
+const profileSrc = '/images/profile.png';
 ---
+
 <Base title="About — Jeremey Burch">
   <Header />
+
+  <!-- Preload the profile image for instant stability -->
+  <head>
+    <link rel="preload" as="image" href={profileSrc} imagesrcset={profileSrc + ' 800w'} />
+  </head>
+
   <section class="mx-auto max-w-7xl px-6 py-16 grid md:grid-cols-[auto,1fr] gap-10 items-start">
-    <ProfileCard img="/images/headshot.jpg" />
+    <!-- CLS-safe image container -->
+    <div class="relative aspect-[3/4] w-full max-w-sm overflow-hidden rounded-xl border border-white/10">
+      <img
+        src={profileSrc}
+        alt="Jeremey Burch headshot"
+        width="600"
+        height="800"
+        loading="eager"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+    </div>
+
     <div class="space-y-4">
       <h1 class="font-heading text-4xl">About</h1>
-      <p class="text-white/80">Lexington-based muralist and illustrator creating bold, story-driven work for schools, businesses, and editorial projects. From marine life classrooms to environmental commentary, the throughline is vivid color and clear narrative.</p>
+      <p class="text-white/80 leading-relaxed max-w-prose">
+        Lexington-based muralist and illustrator creating bold, story-driven work for schools,
+        businesses, and editorial projects. From marine life classrooms to environmental
+        commentary, the throughline is vivid color and clear narrative.
+      </p>
     </div>
   </section>
 </Base>

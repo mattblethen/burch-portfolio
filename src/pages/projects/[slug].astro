@@ -12,32 +12,50 @@ const { slug } = Astro.params;
 const project: Project | undefined = projects.find((p) => p.slug === slug);
 
 if (!project) {
-  // Clean 404 instead of 500 if slug not found
   return new Response('Not found', { status: 404 });
 }
 
 const { title, tag, images = [], blurb } = project;
+const heroImage = images?.[0];
 ---
 
 <Base title={`${title} — Jeremey Burch`}>
   <Header />
 
+  <head>
+    {heroImage && (
+      <link
+        rel="preload"
+        as="image"
+        href={heroImage}
+        imagesrcset={heroImage + ' 1200w'}
+      />
+    )}
+  </head>
+
   <section class="mx-auto max-w-7xl px-6 py-10">
     <div class="mb-6">
       <div class="text-xs tracking-widest text-white/60">{tag}</div>
       <h1 class="font-heading text-4xl">{title}</h1>
-      {blurb && <p class="text-white/80 mt-3">{blurb}</p>}
+      {blurb && <p class="text-white/80 mt-3 max-w-2xl leading-relaxed">{blurb}</p>}
     </div>
 
+    <!-- CLS-safe image grid -->
     <div class="grid gap-6 md:grid-cols-2">
       {images.map((src) => (
-        <img
-          src={src}
-          alt={title}
-          class="w-full rounded-xl border border-white/5 object-cover"
-          data-zoom
-          data-src={src}
-        />
+        <div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-white/5">
+          <img
+            src={src}
+            alt={title}
+            width="1200"
+            height="900"
+            loading="lazy"
+            decoding="async"
+            class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+            data-zoom
+            data-src={src}
+          />
+        </div>
       ))}
     </div>
   </section>

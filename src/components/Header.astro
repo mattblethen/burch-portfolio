@@ -1,12 +1,42 @@
 ---
 ---
-<header class="sticky top-0 z-40 backdrop-blur bg-ink/70 border-b border-white/5">
-  <div class="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
-    <a href="/" class="font-heading text-2xl tracking-wide text-paper">JEREMEY BURCH</a>
-    <nav class="flex gap-6 text-sm">
-      <a href="/portfolio" class="hover:text-flame">Portfolio</a>
-      <a href="/about" class="hover:text-flame">About</a>
-      <a href="/contact" class="px-3 py-1 rounded-lg border border-tide/40 text-tide hover:bg-tide/10">Book a Mural</a>
+<header
+  class="sticky top-0 z-40 backdrop-blur-md bg-ink/70 border-b border-white/5"
+  style="backdrop-filter: blur(12px);"
+>
+  <div
+    class="mx-auto max-w-7xl px-6 flex items-center justify-between h-[64px] md:h-[72px]"
+  >
+    <!-- Logo/Name: fixed height and letter spacing to prevent shift -->
+    <a
+      href="/"
+      class="font-heading text-2xl tracking-wide text-paper whitespace-nowrap leading-none select-none"
+    >
+      JEREMEY BURCH
+    </a>
+
+    <!-- Nav: equalized spacing, color transitions only -->
+    <nav
+      class="flex gap-6 text-sm font-medium leading-none text-white/90"
+    >
+      <a
+        href="/portfolio"
+        class="transition-colors duration-150 hover:text-flame focus:outline-none focus:ring-2 focus:ring-flame/50 rounded-sm"
+      >
+        Portfolio
+      </a>
+      <a
+        href="/about"
+        class="transition-colors duration-150 hover:text-flame focus:outline-none focus:ring-2 focus:ring-flame/50 rounded-sm"
+      >
+        About
+      </a>
+      <a
+        href="/contact"
+        class="px-3 py-1 rounded-lg border border-tide/40 text-tide transition-colors duration-150 hover:bg-tide/10 focus:outline-none focus:ring-2 focus:ring-tide/50"
+      >
+        Book a Mural
+      </a>
     </nav>
   </div>
 </header>
