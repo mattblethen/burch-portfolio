@@ -1,13 +1,20 @@
 ---
 ---
+<style>
+  /* Prevent layout shift while locked; padding-right only if we set --sbw */
+  .lock-scroll {
+    overflow: hidden !important;
+    touch-action: none;
+    padding-right: var(--sbw, 0px);
+  }
+</style>
+
+<!-- Header bar -->
 <header
-  class="sticky top-0 z-40 backdrop-blur-md bg-ink/70 border-b border-white/5"
+  class="sticky top-0 z-50 backdrop-blur-md bg-ink/70 border-b border-white/5"
   style="backdrop-filter: blur(12px);"
 >
-  <div
-    class="mx-auto max-w-7xl px-6 flex items-center justify-between h-[64px] md:h-[72px]"
-  >
-    <!-- Logo/Name: fixed height and letter spacing to prevent shift -->
+  <div class="mx-auto max-w-7xl px-6 flex items-center justify-between h-[64px] md:h-[72px]">
     <a
       href="/"
       class="font-heading text-2xl tracking-wide text-paper whitespace-nowrap leading-none select-none"
@@ -15,28 +22,138 @@
       JEREMEY BURCH
     </a>
 
-    <!-- Nav: equalized spacing, color transitions only -->
-    <nav
-      class="flex gap-6 text-sm font-medium leading-none text-white/90"
-    >
-      <a
-        href="/portfolio"
-        class="transition-colors duration-150 hover:text-flame focus:outline-none focus:ring-2 focus:ring-flame/50 rounded-sm"
-      >
-        Portfolio
-      </a>
-      <a
-        href="/about"
-        class="transition-colors duration-150 hover:text-flame focus:outline-none focus:ring-2 focus:ring-flame/50 rounded-sm"
-      >
-        About
-      </a>
-      <a
-        href="/contact"
-        class="px-3 py-1 rounded-lg border border-tide/40 text-tide transition-colors duration-150 hover:bg-tide/10 focus:outline-none focus:ring-2 focus:ring-tide/50"
-      >
-        Book a Mural
-      </a>
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex gap-6 text-sm font-medium leading-none text-white/90">
+      <a href="/portfolio" class="transition-colors duration-150 hover:text-flame focus:outline-none focus:ring-2 focus:ring-flame/50 rounded-sm">Portfolio</a>
+      <a href="/about" class="transition-colors duration-150 hover:text-flame focus:outline-none focus:ring-2 focus:ring-flame/50 rounded-sm">About</a>
+      <a href="/contact" class="px-3 py-1 rounded-lg border border-tide/40 text-tide transition-colors duration-150 hover:bg-tide/10 focus:outline-none focus:ring-2 focus:ring-tide/50">Book a Mural</a>
     </nav>
+
+    <!-- Mobile hamburger -->
+    <button
+      id="nav-open"
+      aria-label="Open menu"
+      class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-lg border border-white/10 text-white/90 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-flame/50"
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
   </div>
 </header>
+
+<!-- Drawer lives OUTSIDE the header to escape its stacking context -->
+<div
+  id="nav-drawer"
+  class="fixed inset-0 z-[200] pointer-events-none opacity-0 transition-opacity duration-200"
+  aria-hidden="true"
+>
+  <!-- overlay -->
+  <div id="nav-overlay" class="absolute inset-0 bg-black/50"></div>
+
+  <!-- panel -->
+  <aside
+    id="nav-panel"
+    class="absolute right-0 top-0 h-full w-[85%] max-w-[360px] bg-ink border-l border-white/10 translate-x-full transition-transform duration-200 will-change-transform"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="nav-title"
+    tabindex="-1"
+  >
+    <div class="flex items-center justify-between h-[64px] px-5 border-b border-white/10">
+      <div id="nav-title" class="text-sm uppercase tracking-widest text-white/70">Menu</div>
+      <button
+        id="nav-close"
+        aria-label="Close menu"
+        class="inline-flex items-center justify-center w-11 h-11 rounded-lg border border-white/10 text-white/90 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-flame/50"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="p-5 flex flex-col gap-2 text-base">
+      <a href="/portfolio" class="px-3 py-3 rounded-lg hover:bg-white/5">Portfolio</a>
+      <a href="/about" class="px-3 py-3 rounded-lg hover:bg-white/5">About</a>
+      <a href="/contact" class="mt-2 px-4 py-3 rounded-xl border border-tide/40 text-tide text-center hover:bg-tide/10">Book a Mural</a>
+    </nav>
+  </aside>
+</div>
+
+<script is:inline>
+  (() => {
+    const openBtn = document.getElementById('nav-open');
+    const drawer  = document.getElementById('nav-drawer');
+    const panel   = document.getElementById('nav-panel');
+    const overlay = document.getElementById('nav-overlay');
+    const closeBtn= document.getElementById('nav-close');
+
+    // Compute scrollbar width only when needed
+    function scrollbarW() {
+      const d = document.createElement('div');
+      d.style.visibility = 'hidden';
+      d.style.overflow = 'scroll';
+      d.style.width = '50px';
+      d.style.height = '50px';
+      document.body.appendChild(d);
+      const inner = document.createElement('div');
+      inner.style.width = '100%';
+      d.appendChild(inner);
+      const w = d.offsetWidth - inner.offsetWidth;
+      d.remove();
+      return w;
+    }
+
+    function open() {
+      drawer.classList.remove('pointer-events-none', 'opacity-0');
+      drawer.classList.add('opacity-100');
+      panel.classList.remove('translate-x-full');
+      drawer.setAttribute('aria-hidden', 'false');
+
+      // lock scroll without initial jank
+      const w = scrollbarW();
+      if (w > 0) document.documentElement.style.setProperty('--sbw', w + 'px');
+      document.body.classList.add('lock-scroll');
+
+      panel.focus();
+    }
+
+    function close() {
+      drawer.classList.add('pointer-events-none', 'opacity-0');
+      drawer.classList.remove('opacity-100');
+      panel.classList.add('translate-x-full');
+      drawer.setAttribute('aria-hidden', 'true');
+
+      document.body.classList.remove('lock-scroll');
+      document.documentElement.style.removeProperty('--sbw');
+      openBtn?.focus();
+    }
+
+    openBtn.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', close);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawer.getAttribute('aria-hidden') === 'false') close();
+    });
+
+    // Close after clicking a link
+    panel.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href]');
+      if (a) close();
+    });
+
+    // Safety: ensure no leftover scroll locks on first load
+    window.addEventListener('pageshow', () => {
+      document.body.classList.remove('lock-scroll');
+      document.documentElement.style.removeProperty('--sbw');
+    });
+
+    // Respect reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      panel.style.transition = 'none';
+      drawer.style.transition = 'none';
+    }
+  })();
+</script>
