@@ -9,7 +9,8 @@
       "/images/projects/detailed-progress-of-volcano-scene/1-1761594017507.jpg",
       "/images/projects/detailed-progress-of-volcano-scene/2-1761594018029.jpg"
     ],
-    "blurb": "Customer wanted a full wall illustrated mural"
+    "blurb": "Customer wanted a full wall illustrated mural",
+    "featured": false
   },
   {
     "slug": "undersea-classroom",
@@ -18,7 +19,8 @@
     "cover": "/images/sea.jpg",
     "images": [
       "/images/sea.jpg"
-    ]
+    ],
+    "featured": false
   },
   {
     "slug": "volcano-progress",
@@ -30,7 +32,8 @@
       "/images/projects/volcano/wip.jpg",
       "/images/projects/volcano/Mural.jpg"
     ],
-    "blurb": "From line art to final: a classroom-sized volcano scene with warm sunset tones and ocean foreground."
+    "blurb": "From line art to final: a classroom-sized volcano scene with warm sunset tones and ocean foreground.",
+    "featured": true
   },
   {
     "slug": "trash-wave",
@@ -39,16 +42,18 @@
     "cover": "/images/trash.jpg",
     "images": [
       "/images/trash.jpg"
-    ]
+    ],
+    "featured": false
   },
   {
     "slug": "jungle-classroom",
     "title": "Jungle Classroom Mural",
     "tag": "MURAL",
-    "cover": "/images/wallart.jpg",
+    "cover": "/images/daycarewallart.jpg",
     "images": [
-      "/images/wallart.jpg"
-    ]
+      "/images/daycarewallart.jpg"
+    ],
+    "featured": true
   },
   {
     "slug": "dinosaur-science-room",
@@ -57,16 +62,18 @@
     "cover": "/images/Dino.jpg",
     "images": [
       "/images/Dino.jpg"
-    ]
+    ],
+    "featured": false
   },
   {
     "slug": "world-map-classroom",
     "title": "World Map Classroom Mural",
     "tag": "MURAL",
-    "cover": "/images/daycar wallart.jpg",
+    "cover": "/images/wallart.jpg",
     "images": [
-      "/images/daycar wallart.jpg"
-    ]
+      "/images/wallart.jpg"
+    ],
+    "featured": false
   },
   {
     "slug": "political-debate",
@@ -75,7 +82,8 @@
     "cover": "/images/redvblue.jpg",
     "images": [
       "/images/redvblue.jpg"
-    ]
+    ],
+    "featured": false
   },
   {
     "slug": "falling-illustration",
@@ -84,7 +92,8 @@
     "cover": "/images/portfolio.jpg",
     "images": [
       "/images/portfolio.jpg"
-    ]
+    ],
+    "featured": true
   },
   {
     "slug": "tattoo-moth",
@@ -93,7 +102,8 @@
     "cover": "/images/tattoo.jpg",
     "images": [
       "/images/tattoo.jpg"
-    ]
+    ],
+    "featured": false
   },
   {
     "slug": "fish-composition",
@@ -102,6 +112,7 @@
     "cover": "/images/fish.jpg",
     "images": [
       "/images/fish.jpg"
-    ]
+    ],
+    "featured": false
   }
 ]

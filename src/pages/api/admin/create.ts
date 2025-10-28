@@ -10,12 +10,8 @@ const GH_BRANCH = (import.meta.env.GH_BRANCH as string) || 'main';
 export const POST: APIRoute = async ({ request }) => {
   try {
     const key = (request.headers.get('x-admin-key') ?? '').trim();
-    if (!ADMIN_PASSWORD) {
-      return json({ ok: false, reason: 'no-admin-password-env' }, 500);
-    }
-    if (key !== ADMIN_PASSWORD) {
-      return json({ ok: false }, 401);
-    }
+    if (!ADMIN_PASSWORD) return json({ ok: false, reason: 'no-admin-password-env' }, 500);
+    if (key !== ADMIN_PASSWORD) return json({ ok: false, reason: 'mismatch' }, 401);
 
     const form = await request.formData();
     const title = String(form.get('title') || '').trim();
@@ -23,6 +19,7 @@ export const POST: APIRoute = async ({ request }) => {
       ? 'ILLUSTRATION'
       : 'MURAL') as 'MURAL' | 'ILLUSTRATION';
     const blurb = String(form.get('blurb') || '').trim();
+    const featured = String(form.get('featured') || '') === 'on'; // checkbox
     let slug = String(form.get('slug') || '')
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
@@ -60,7 +57,8 @@ export const POST: APIRoute = async ({ request }) => {
       tag,
       cover,
       images: imagePaths,
-      ...(blurb ? { blurb } : {})
+      ...(blurb ? { blurb } : {}),
+      ...(featured ? { featured: true } : {})
     };
 
     // Prepend new entry

@@ -54,6 +54,11 @@ import Header from '../components/Header.astro';
         class="w-full rounded border border-white/10 bg-white/5 px-3 py-2"
       ></textarea>
 
+      <div class="flex items-center gap-2">
+        <input id="create-featured" name="featured" type="checkbox" />
+        <label for="create-featured" class="text-white/80">Featured on homepage</label>
+      </div>
+
       <label class="block">
         <span class="text-white/70">Images (1 or more)</span>
         <input name="images" type="file" multiple accept="image/*" class="mt-1" />
@@ -65,9 +70,9 @@ import Header from '../components/Header.astro';
       <div id="create-status" class="text-white/70"></div>
     </form>
 
-    <!-- Reorder/Delete -->
+    <!-- Reorder/Edit/Delete -->
     <div id="manage" class="mt-10 hidden">
-      <h2 class="font-heading text-2xl mb-3">Reorder / Delete</h2>
+      <h2 class="font-heading text-2xl mb-3">Reorder / Edit / Delete</h2>
       <ul id="list" class="space-y-2"></ul>
       <button
         id="save-order"
@@ -79,21 +84,96 @@ import Header from '../components/Header.astro';
     </div>
   </section>
 
+  <!-- Edit Modal -->
+  <div id="edit-modal" class="fixed inset-0 hidden z-[1000]">
+    <div id="edit-overlay" class="absolute inset-0 bg-black/70"></div>
+    <div class="relative mx-auto mt-12 w-[min(720px,95vw)] rounded-xl border border-white/10 bg-[#161616] p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-heading text-2xl">Edit Project</h3>
+        <button id="edit-close" class="rounded bg-white/10 px-3 py-1">Close</button>
+      </div>
+
+      <form id="edit-form" class="space-y-3">
+        <input type="hidden" name="oldSlug" />
+
+        <div class="grid gap-3 md:grid-cols-2">
+          <label class="block">
+            <span class="text-white/70 text-sm">Title</span>
+            <input name="title" class="w-full rounded border border-white/10 bg-white/5 px-3 py-2" />
+          </label>
+
+          <label class="block">
+            <span class="text-white/70 text-sm">Tag</span>
+            <select name="tag" class="w-full rounded border border-white/10 bg-white/5 px-3 py-2">
+              <option value="MURAL">MURAL</option>
+              <option value="ILLUSTRATION">ILLUSTRATION</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="block">
+          <span class="text-white/70 text-sm">New Slug (optional)</span>
+          <input name="newSlug" placeholder="leave blank to keep" class="w-full rounded border border-white/10 bg-white/5 px-3 py-2" />
+        </label>
+
+        <label class="block">
+          <span class="text-white/70 text-sm">Blurb</span>
+          <textarea name="blurb" rows="3" class="w-full rounded border border-white/10 bg-white/5 px-3 py-2"></textarea>
+        </label>
+
+        <div class="flex items-center gap-2">
+          <input id="edit-featured" name="featured" type="checkbox" />
+          <label for="edit-featured" class="text-white/80 text-sm">Featured on homepage</label>
+        </div>
+
+        <div>
+          <div class="text-white/70 text-sm mb-2">Existing images (check to remove)</div>
+          <div id="edit-existing" class="grid gap-2 md:grid-cols-3"></div>
+        </div>
+
+        <div class="grid gap-3 md:grid-cols-2">
+          <label class="block">
+            <span class="text-white/70 text-sm">Upload images (optional)</span>
+            <input name="images" type="file" multiple accept="image/*" class="mt-1" />
+          </label>
+
+          <label class="block">
+            <span class="text-white/70 text-sm">Image mode</span>
+            <select name="imageMode" class="w-full rounded border border-white/10 bg-white/5 px-3 py-2">
+              <option value="append">Append to existing</option>
+              <option value="replace">Replace all images (danger)</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="inline-flex items-center gap-2">
+          <input type="checkbox" name="setCoverLast" checked />
+          <span class="text-white/80 text-sm">Set cover to the last uploaded image (if any)</span>
+        </label>
+
+        <div class="pt-2">
+          <button class="rounded bg-tide px-4 py-2 text-ink font-semibold">Save Changes</button>
+          <span id="edit-status" class="ml-3 text-white/70"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script is:inline>
-    // Helpers
     const $ = (s, r = document) => r.querySelector(s);
     const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+    const ce = (t) => document.createElement(t);
 
     let KEY = '';
     let PROJECTS = [];
 
     async function loadProjects() {
-  const res = await fetch('/api/admin/list', { cache: 'no-store' });
-  PROJECTS = res.ok ? await res.json() : [];
+      const res = await fetch('/api/admin/list', { cache: 'no-store' });
+      PROJECTS = res.ok ? await res.json() : [];
       const ul = $('#list');
       ul.innerHTML = '';
       PROJECTS.forEach((p) => {
-        const li = document.createElement('li');
+        const li = ce('li');
         li.draggable = true;
         li.dataset.slug = p.slug;
         li.className =
@@ -105,9 +185,13 @@ import Header from '../components/Header.astro';
             <div>
               <div class="font-semibold">${p.title}</div>
               <div class="text-xs text-white/60">${p.slug}</div>
+              ${p.featured ? '<div class="text-xs text-yellow-300 mt-1">★ Featured</div>' : ''}
             </div>
           </div>
-          <button data-del="${p.slug}" class="text-red-300 hover:text-red-200">Delete</button>
+          <div class="flex items-center gap-3">
+            <button data-edit="${p.slug}" class="text-blue-300 hover:text-blue-200">Edit</button>
+            <button data-del="${p.slug}" class="text-red-300 hover:text-red-200">Delete</button>
+          </div>
         `;
         ul.appendChild(li);
       });
@@ -139,76 +223,139 @@ import Header from '../components/Header.astro';
       });
 
       list.addEventListener('click', async (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest('[data-del]') : null;
-        if (!btn) return;
-        const slug = btn.getAttribute('data-del');
-        if (!slug) return;
+        const delBtn = e.target && e.target.closest ? e.target.closest('[data-del]') : null;
+        if (delBtn) {
+          const slug = delBtn.getAttribute('data-del');
+          if (slug && confirm('Delete ' + slug + '?')) {
+            const res = await fetch('/api/admin/delete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'x-admin-key': KEY },
+              body: JSON.stringify({ slug })
+            });
+            if (res.ok) { await loadProjects(); $('#order-status').textContent = 'Deleted.'; }
+            else {
+              const data = await res.json().catch(() => ({}));
+              $('#order-status').textContent = 'Delete failed' + (data && data.reason ? ': ' + data.reason : '.');
+            }
+          }
+          return;
+        }
 
-        if (!confirm('Delete ' + slug + '?')) return;
-
-        const res = await fetch('/api/admin/delete', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-key': KEY
-          },
-          body: JSON.stringify({ slug })
-        });
-
-        if (res.ok) {
-          await loadProjects();
-          $('#order-status').textContent = 'Deleted.';
-        } else {
-          const data = await res.json().catch(() => ({}));
-          $('#order-status').textContent =
-            'Delete failed' + (data && data.reason ? ': ' + data.reason : '.');
+        const editBtn = e.target && e.target.closest ? e.target.closest('[data-edit]') : null;
+        if (editBtn) {
+          const slug = editBtn.getAttribute('data-edit');
+          const p = PROJECTS.find(x => x.slug === slug);
+          if (!p) return;
+          openEdit(p);
         }
       });
     }
 
     // Unlock with server verification
     $('#save-key').addEventListener('click', async () => {
-  KEY = $('#admin-key').value.trim();
-  if (!KEY) return;
+      KEY = $('#admin-key').value.trim();
+      if (!KEY) return;
 
-  const res = await fetch('/api/admin/ping', {
-    method: 'POST',
-    headers: { 'x-admin-key': KEY }
-  });
-
-  if (res.ok) {
-    $('#auth-status').textContent = '✅ Unlocked';
-    $('#create-form').classList.remove('hidden');
-    $('#manage').classList.remove('hidden');
-    loadProjects();
-  } else {
-    let reason = 'unknown';
-    try { const data = await res.json(); reason = data?.reason || reason; } catch {}
-    // Show server status + reason so we know what to fix
-    $('#auth-status').textContent = `❌ Incorrect password (status ${res.status}, reason: ${reason})`;
-    KEY = '';
-  }
-});
-
+      const res = await fetch('/api/admin/ping', { method: 'POST', headers: { 'x-admin-key': KEY } });
+      if (res.ok) {
+        $('#auth-status').textContent = '✅ Unlocked';
+        $('#create-form').classList.remove('hidden');
+        $('#manage').classList.remove('hidden');
+        loadProjects();
+      } else {
+        let reason = 'unknown';
+        try { const data = await res.json(); reason = data?.reason || reason; } catch {}
+        $('#auth-status').textContent = '❌ Incorrect password (status ' + res.status + ', reason: ' + reason + ')';
+        KEY = '';
+      }
+    });
 
     // Create project
     $('#create-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(e.currentTarget);
-      const res = await fetch('/api/admin/create', {
-        method: 'POST',
-        headers: { 'x-admin-key': KEY },
-        body: fd
-      });
-
+      const res = await fetch('/api/admin/create', { method: 'POST', headers: { 'x-admin-key': KEY }, body: fd });
       if (res.ok) {
         $('#create-status').textContent = 'Created!';
         e.currentTarget.reset();
         loadProjects();
       } else {
         const data = await res.json().catch(() => ({}));
-        $('#create-status').textContent =
-          'Failed.' + (data && data.reason ? ' ' + data.reason : data && data.error ? ' ' + data.error : '');
+        $('#create-status').textContent = 'Failed.' + (data && data.reason ? ' ' + data.reason : data && data.error ? ' ' + data.error : '');
+      }
+    });
+
+    // ===== Edit Modal logic =====
+    const editModal = $('#edit-modal');
+    const editOverlay = $('#edit-overlay');
+    const editClose = $('#edit-close');
+    const editForm = $('#edit-form');
+
+    function openEdit(p) {
+      editForm.reset();
+      editForm.oldSlug.value = p.slug;
+      editForm.title.value = p.title || '';
+      editForm.tag.value = p.tag || 'MURAL';
+      editForm.newSlug.value = '';
+      editForm.blurb.value = p.blurb || '';
+      $('#edit-featured').checked = !!p.featured;
+
+      const wrap = $('#edit-existing');
+      wrap.innerHTML = '';
+      (p.images || []).forEach((src) => {
+        const row = ce('label');
+        row.className = 'flex items-center gap-3 rounded border border-white/10 bg-white/5 p-2';
+        row.innerHTML = `
+          <input type="checkbox" data-remove="${src}" />
+          <img src="${src}" alt="" class="w-16 h-16 object-cover rounded border border-white/10" />
+          <span class="text-xs break-all">${src}</span>
+        `;
+        wrap.appendChild(row);
+      });
+
+      editModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeEdit() {
+      editModal.classList.add('hidden');
+      document.body.style.overflow = '';
+      $('#edit-status').textContent = '';
+    }
+
+    editOverlay.addEventListener('click', closeEdit);
+    editClose.addEventListener('click', closeEdit);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !editModal.classList.contains('hidden')) closeEdit(); });
+
+    editForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fd = new FormData();
+      fd.set('oldSlug', editForm.oldSlug.value);
+      fd.set('title', editForm.title.value);
+      fd.set('tag', editForm.tag.value);
+      fd.set('newSlug', editForm.newSlug.value);
+      fd.set('blurb', editForm.blurb.value);
+      fd.set('imageMode', editForm.imageMode.value);
+      fd.set('setCoverLast', editForm.setCoverLast.checked ? 'true' : 'false');
+      fd.set('featured', $('#edit-featured').checked ? 'on' : '');
+
+      const toRemove = $$('#edit-existing [data-remove]:checked').map((cb) => cb.getAttribute('data-remove'));
+      fd.set('remove', JSON.stringify(toRemove));
+
+      const files = editForm.images.files || [];
+      for (let i = 0; i < files.length; i++) {
+        fd.append('images', files[i], files[i].name);
+      }
+
+      const res = await fetch('/api/admin/update', { method: 'POST', headers: { 'x-admin-key': KEY }, body: fd });
+      if (res.ok) {
+        $('#edit-status').textContent = 'Saved!';
+        await loadProjects();
+        setTimeout(closeEdit, 600);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        $('#edit-status').textContent = 'Save failed.' + (data && data.reason ? ' ' + data.reason : data && data.error ? ' ' + data.error : '');
       }
     });
 
@@ -217,10 +364,7 @@ import Header from '../components/Header.astro';
       const order = $$('#list li').map((li) => li.dataset.slug);
       const res = await fetch('/api/admin/reorder', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-key': KEY
-        },
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': KEY },
         body: JSON.stringify({ order })
       });
 
@@ -228,8 +372,7 @@ import Header from '../components/Header.astro';
         $('#order-status').textContent = 'Order saved.';
       } else {
         const data = await res.json().catch(() => ({}));
-        $('#order-status').textContent =
-          'Save failed.' + (data && data.reason ? ' ' + data.reason : data && data.error ? ' ' + data.error : '');
+        $('#order-status').textContent = 'Save failed.' + (data && data.reason ? ' ' + data.reason : data && data.error ? ' ' + data.error : '');
       }
     });
   </script>
