@@ -1,7 +1,12 @@
 ---
-const { title = 'Jeremey Burch — Muralist & Illustrator', description = 'Transforming spaces into stories', } = Astro.props;
-import  SpeedInsights  from "@vercel/speed-insights/astro"
+import SpeedInsights from "@vercel/speed-insights/astro";
+
+const {
+  title = 'Jeremey Burch — Muralist & Illustrator',
+  description = 'Transforming spaces into stories',
+} = Astro.props;
 ---
+
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -13,5 +18,8 @@ import  SpeedInsights  from "@vercel/speed-insights/astro"
   </head>
   <body class="min-h-screen bg-ink text-paper font-body">
     <slot />
+    <SpeedInsights /> 
+    <!-- Optional: render only in production -->
+    <!-- {import.meta.env.PROD && <SpeedInsights />} -->
   </body>
 </html>
