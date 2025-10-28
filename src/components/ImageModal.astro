@@ -1,9 +1,9 @@
 ---
 /**
- * CLS-safe Image Modal
- * - Uses opacity + pointer-events instead of removing from layout to prevent scroll jumps.
- * - Locks body scroll without shifting content (compensates scrollbar width).
- * - Adds smooth fade-in/out transitions.
+ * Final CLS-safe Image Modal (fully functional)
+ * - Fades in/out smoothly.
+ * - Closes correctly on overlay click, close button, outside click, or Esc key.
+ * - No scroll jumps due to scrollbar compensation.
  */
 ---
 <style>
@@ -57,12 +57,11 @@
   (() => {
     const modal = document.getElementById('img-modal');
     const overlay = document.getElementById('img-modal-overlay');
+    const closeBtn = document.getElementById('img-modal-close');
     const imgEl = document.getElementById('img-modal-image');
 
-    let scrollBarWidth = 0;
-
-    // Calculate scrollbar width once
-    function getScrollbarWidth() {
+    // Measure scrollbar width to prevent layout shift
+    const getScrollbarWidth = () => {
       const div = document.createElement('div');
       div.style.visibility = 'hidden';
       div.style.overflow = 'scroll';
@@ -75,9 +74,9 @@
       const width = div.offsetWidth - inner.offsetWidth;
       div.remove();
       return width;
-    }
+    };
 
-    scrollBarWidth = getScrollbarWidth();
+    const scrollBarWidth = getScrollbarWidth();
 
     function openModal(src) {
       if (!src) return;
@@ -85,8 +84,6 @@
       modal.classList.remove('hidden');
       modal.classList.add('visible');
       modal.setAttribute('aria-hidden', 'false');
-
-      // Prevent scroll shift when hiding scrollbar
       document.body.style.overflow = 'hidden';
       document.body.style.paddingRight = scrollBarWidth + 'px';
     }
@@ -95,14 +92,12 @@
       modal.classList.remove('visible');
       modal.classList.add('hidden');
       modal.setAttribute('aria-hidden', 'true');
-
-      // Allow scrolling again
       document.body.style.overflow = '';
       document.body.style.paddingRight = '';
       imgEl.removeAttribute('src');
     }
 
-    // Open any element with [data-zoom]
+    // Click on zoomable image
     document.addEventListener('click', (e) => {
       const zoomTarget = e.target.closest('[data-zoom]');
       if (zoomTarget) {
@@ -113,14 +108,18 @@
       }
     });
 
-    // Close on overlay or button
-    document.addEventListener('click', (e) => {
-      if (modal.classList.contains('hidden')) return;
+    // Close on overlay or close button
+    overlay.addEventListener('click', closeModal);
+    closeBtn.addEventListener('click', closeModal);
 
-      const isCloseBtn = e.target.closest('[data-close]');
-      const clickedOverlay = e.target === overlay;
-
-      if (isCloseBtn || clickedOverlay) {
+    // Close when clicking outside the image (but inside modal)
+    modal.addEventListener('click', (e) => {
+      if (
+        e.target === modal ||
+        (!e.target.closest('#img-modal-image') &&
+          !e.target.closest('[data-close]') &&
+          !e.target.closest('#img-modal-overlay'))
+      ) {
         closeModal();
       }
     });
